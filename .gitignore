@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# Database
+*.db
+*.sqlite3
+
+# Local secrets (.env.example is tracked instead)
+.env
+
+# System & IDE
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Portal - VolunteerConnect</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a class="sidebar-brand" href="volunteer_dashboard.html">
+          <i class="bi bi-heart-pulse-fill"></i>
+          <span>Volunteer<span class="text-indigo">Portal</span></span>
+        </a>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#v-dashboard" class="sidebar-link active" data-bs-toggle="tab" data-bs-target="#vtab-dashboard">
+            <i class="bi bi-speedometer2"></i> My Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#v-events" class="sidebar-link" data-bs-toggle="tab" data-bs-target="#vtab-events">
+            <i class="bi bi-calendar-check-fill"></i> Assigned & Upcoming Events
+          </a>
+        </li>
+        <li>
+          <a href="#v-checkin" class="sidebar-link" data-bs-toggle="tab" data-bs-target="#vtab-checkin">
+            <i class="bi bi-stopwatch-fill"></i> Active Shift & Check-In
+          </a>
+        </li>
+        <li>
+          <a href="#v-history" class="sidebar-link" data-bs-toggle="tab" data-bs-target="#vtab-history">
+            <i class="bi bi-journal-text"></i> My Hours Log
+          </a>
+        </li>
+        <li>
+          <a href="#v-profile" class="sidebar-link" data-bs-toggle="tab" data-bs-target="#vtab-profile">
+            <i class="bi bi-person-gear"></i> Profile Settings
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-user">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-person-circle fs-4 text-light"></i>
+          <div>
+            <div class="fw-bold small text-white" id="volunteer-name">Volunteer</div>
+            <div class="text-muted extra-small">Volunteer Member</div>
+          </div>
+        </div>
+        <a href="#" class="logout-btn text-danger fs-5" title="Sign Out"><i class="bi bi-power"></i></a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Bar / Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+          <h2 class="fw-extrabold text-dark mb-0">Welcome Back!</h2>
+          <p class="text-muted mb-0 small">Track active shift hours, join upcoming community events, and manage your profile.</p>
+        </div>
+        <div>
+          <span class="badge-status badge-approved" id="volunteer-status-badge">Approved</span>
+        </div>
+      </div>
+
+      <!-- Pending Approval Alert Banner -->
+      <div class="alert alert-warning border-warning d-none mb-4 shadow-sm" id="pending-approval-alert">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+          <div>
+            <h6 class="fw-bold mb-1">Registration Pending Admin Verification</h6>
+            <p class="mb-0 small">Your application is currently under review by an administrator. You will gain full access to event assignments and check-in as soon as your account is verified.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        
+        <!-- 1. DASHBOARD TAB -->
+        <div class="tab-pane fade show active" id="vtab-dashboard">
+          
+          <!-- Personal Metrics Cards -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div>
+                  <div class="stat-label">Total Hours Contributed</div>
+                  <div class="stat-value text-primary" id="volunteer-total-hours">0.0 hrs</div>
+                </div>
+                <div class="stat-icon primary"><i class="bi bi-clock-history"></i></div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="stat-card">
+                <div>
+                  <div class="stat-label">Assigned Events</div>
+                  <div class="stat-value text-success" id="volunteer-events-count">0</div>
+                </div>
+                <div class="stat-icon success"><i class="bi bi-calendar-event"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Shift Timer Box Widget -->
+          <div class="card border-0 mb-4 shadow-sm">
+            <div class="card-body p-0">
+              <div class="timer-box">
+                <div class="row align-items-center">
+                  <div class="col-lg-8">
+                    <span class="badge bg-white text-primary fw-bold px-3 py-1 rounded-pill mb-2">Shift Tracker</span>
+                    <h4 class="fw-bold mb-1" id="active-shift-event">No Active Shift</h4>
+                    <p class="opacity-75 small mb-0">Check in to record your working hours for scheduled volunteer events.</p>
+                  </div>
+                  <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <div class="timer-digits mb-2" id="active-shift-timer">00:00:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Assigned Events Cards Section -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-check text-primary me-2"></i>My Scheduled Events</h5>
+            <div class="row g-4" id="assigned-events-container">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 2. EVENTS TAB -->
+        <div class="tab-pane fade" id="vtab-events">
+          <div class="card glass-card border-0 shadow-sm p-4">
+            <h5 class="fw-bold text-dark mb-3">Community Events & Openings</h5>
+            <p class="text-muted small">Browse all upcoming events. Click "Join Event" to request assignment.</p>
+            <div class="row g-4" id="assigned-events-container">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. CHECK-IN TAB -->
+        <div class="tab-pane fade" id="vtab-checkin">
+          <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+              
+              <!-- Check-In Form Widget -->
+              <div class="card glass-card border-0 shadow-lg p-4" id="checkin-widget">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-box-arrow-in-right text-primary me-2"></i>Shift Check-In</h4>
+                <p class="text-muted small">Select your scheduled event and click Check-In when arriving at the location.</p>
+
+                <div class="mb-3">
+                  <label for="checkin-event-select" class="form-label fw-semibold">Select Event *</label>
+                  <select class="form-select" id="checkin-event-select">
+                    <option value="">Select Event to Check-In...</option>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label for="checkin-notes" class="form-label fw-semibold">Arrival Notes (Optional)</label>
+                  <input type="text" class="form-control" id="checkin-notes" placeholder="e.g. Arrived at Hall B entrance">
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" id="btn-check-in">
+                  <i class="bi bi-play-fill me-1"></i> Start Shift & Check-In
+                </button>
+              </div>
+
+              <!-- Active Shift Widget (Hidden until checked in) -->
+              <div class="card glass-card border-0 shadow-lg p-4 text-center d-none" id="active-shift-widget">
+                <span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-2 rounded-pill mb-3">
+                  <i class="bi bi-record-fill text-danger me-1 animate-pulse"></i> Shift Currently Active
+                </span>
+                <h4 class="fw-bold text-dark mb-2" id="active-shift-event">Event Name</h4>
+                <div class="timer-digits text-primary my-3" id="active-shift-timer">00:00:00</div>
+                <p class="text-muted small mb-4">Your shift working hours are being logged automatically in real time.</p>
+
+                <button class="btn btn-danger btn-lg w-100 fw-bold shadow-sm" id="btn-check-out">
+                  <i class="bi bi-stop-fill me-1"></i> Check-Out & Save Hours
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. HISTORY TAB -->
+        <div class="tab-pane fade" id="vtab-history">
+          <div class="card glass-card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+              <h5 class="fw-bold text-dark mb-0">Personal Attendance & Hours Record</h5>
+              <p class="text-muted small mb-0">Detailed breakdown of all your completed volunteer shifts.</p>
+            </div>
+            <div class="card-body px-0">
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Shift ID</th>
+                      <th>Event Name</th>
+                      <th>Check-In Time</th>
+                      <th>Check-Out Time</th>
+                      <th>Hours Worked</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="my-history-table">
+                    <!-- Rendered by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. PROFILE TAB -->
+        <div class="tab-pane fade" id="vtab-profile">
+          <div class="card glass-card border-0 shadow-sm p-4 col-md-8 mx-auto">
+            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-gear text-primary me-2"></i>Volunteer Profile Settings</h5>
+            
+            <form id="volunteer-profile-form">
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="profile-name" class="form-label fw-semibold">Full Name</label>
+                  <input type="text" class="form-control" id="profile-name" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="profile-phone" class="form-label fw-semibold">Phone Number</label>
+                  <input type="tel" class="form-control" id="profile-phone" required>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="profile-skills" class="form-label fw-semibold">Skills (Comma-separated)</label>
+                  <input type="text" class="form-control" id="profile-skills">
+                </div>
+                <div class="col-md-6">
+                  <label for="profile-availability" class="form-label fw-semibold">Availability</label>
+                  <select class="form-select" id="profile-availability">
+                    <option value="Weekends">Weekends</option>
+                    <option value="Evenings & Weekends">Evenings & Weekends</option>
+                    <option value="Weekdays">Weekdays</option>
+                    <option value="Flexible">Flexible</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="profile-bio" class="form-label fw-semibold">Bio / Notes</label>
+                <textarea class="form-control" id="profile-bio" rows="3"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary fw-bold px-4">
+                <i class="bi bi-save me-1"></i> Save Profile Changes
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/volunteer.js"></script>
+</body>
+</html>

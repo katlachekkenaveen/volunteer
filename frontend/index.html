@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Connect - Volunteer Management & Scheduling System</title>
+  <meta name="description" content="Streamlined volunteer registration, event scheduling, admin verification, and automatic working hours tracking.">
+  
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top border-bottom border-secondary">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="index.html">
+        <i class="bi bi-heart-pulse-fill text-indigo fs-4 text-primary"></i>
+        <span>Volunteer<span class="text-primary">Connect</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-menu navbar-nav ms-auto align-items-center gap-3">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#events-section">Upcoming Events</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about-section">How It Works</a></li>
+          <li class="nav-item">
+            <a href="login.html" class="btn btn-outline-light rounded-pill px-4 me-1">Sign In</a>
+          </li>
+          <li class="nav-item">
+            <a href="login.html?tab=register" class="btn btn-primary rounded-pill px-3 me-1">Register Volunteer</a>
+          </li>
+          <li class="nav-item">
+            <a href="admin_register.html" class="btn btn-warning rounded-pill px-3 fw-bold">Register Admin</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-gradient py-5 text-white position-relative">
+    <div class="container py-5 my-3">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-7">
+          <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
+            <i class="bi bi-star-fill text-warning me-1"></i> Community Empowerment Platform
+          </span>
+          <h1 class="display-4 fw-extrabold mb-3">Empowering Volunteers, Transforming Communities</h1>
+          <p class="lead text-light mb-4 opacity-90">
+            A comprehensive system for volunteer registration, admin verification, real-time event assignment, check-in tracking, and automated work hour reporting.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="login.html?tab=register" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+              <i class="bi bi-person-plus-fill me-2"></i> Join as a Volunteer
+            </a>
+            <a href="login.html" class="btn btn-outline-light btn-lg rounded-pill px-4">
+              <i class="bi bi-shield-lock-fill me-2"></i> Admin Portal
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-5 text-center">
+          <div class="glass-card p-4 text-dark text-start">
+            <h4 class="fw-bold mb-3 text-primary"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Overview</h4>
+            <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+              <li class="d-flex align-items-start gap-3">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <div><strong>Fast Registration:</strong> Create a profile, list your skills & availability.</div>
+              </li>
+              <li class="d-flex align-items-start gap-3">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <div><strong>Admin Verification:</strong> Approved profiles get assigned to high-impact events.</div>
+              </li>
+              <li class="d-flex align-items-start gap-3">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <div><strong>Real-Time Shift Timer:</strong> One-click check-in and automatic hours calculation.</div>
+              </li>
+              <li class="d-flex align-items-start gap-3">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <div><strong>Downloadable Reports:</strong> Export CSV analytics for hours & participation.</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Impact Stats Section -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <h2 class="fw-extrabold text-primary display-5 mb-1" id="landing-stat-vols">120+</h2>
+            <p class="text-muted fw-semibold mb-0">Registered Volunteers</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <h2 class="fw-extrabold text-success display-5 mb-1" id="landing-stat-events">25+</h2>
+            <p class="text-muted fw-semibold mb-0">Community Events</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <h2 class="fw-extrabold text-warning display-5 mb-1" id="landing-stat-hours">1,450</h2>
+            <p class="text-muted fw-semibold mb-0">Total Volunteer Hours</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="p-3">
+            <h2 class="fw-extrabold text-info display-5 mb-1">98%</h2>
+            <p class="text-muted fw-semibold mb-0">Attendance Rate</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Public Upcoming Events Preview -->
+  <section id="events-section" class="py-5 bg-light">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <span class="text-primary fw-bold text-uppercase tracking-wide">Get Involved</span>
+        <h2 class="fw-extrabold text-dark mt-1">Featured Upcoming Events</h2>
+        <p class="text-muted">Explore upcoming opportunities and register to start making an impact.</p>
+      </div>
+
+      <div class="row g-4" id="public-events-list">
+        <!-- Sample Preview Events -->
+        <div class="col-md-4">
+          <div class="card glass-card h-100 border-0">
+            <div class="card-body">
+              <span class="badge-status badge-upcoming mb-2">Upcoming</span>
+              <h5 class="fw-bold text-dark">City Park Spring Clean-up</h5>
+              <p class="text-muted small">Cleaning up Central Park, planting native flowers, and restoring community garden beds.</p>
+              <div class="text-muted small border-top pt-3 mt-2">
+                <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Central Park Pavilion</div>
+                <div><i class="bi bi-calendar-event text-primary me-2"></i>Sep 05, 2026</div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+              <a href="login.html?tab=register" class="btn btn-sm btn-primary rounded-pill">Sign Up to Help</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card glass-card h-100 border-0">
+            <div class="card-body">
+              <span class="badge-status badge-upcoming mb-2">Upcoming</span>
+              <h5 class="fw-bold text-dark">Community Food Pantry Drive</h5>
+              <p class="text-muted small">Sorting food donations, packing care bundles, and assisting families at the local food bank.</p>
+              <div class="text-muted small border-top pt-3 mt-2">
+                <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>St. Mary Community Center</div>
+                <div><i class="bi bi-calendar-event text-primary me-2"></i>Sep 12, 2026</div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+              <a href="login.html?tab=register" class="btn btn-sm btn-primary rounded-pill">Sign Up to Help</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card glass-card h-100 border-0">
+            <div class="card-body">
+              <span class="badge-status badge-upcoming mb-2">Upcoming</span>
+              <h5 class="fw-bold text-dark">Youth Coding & Literacy Workshop</h5>
+              <p class="text-muted small">Mentoring middle school students in basic computer skills and reading comprehension.</p>
+              <div class="text-muted small border-top pt-3 mt-2">
+                <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Downtown Public Library</div>
+                <div><i class="bi bi-calendar-event text-primary me-2"></i>Aug 25, 2026</div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 text-end">
+              <a href="login.html?tab=register" class="btn btn-sm btn-primary rounded-pill">Sign Up to Help</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Flow Section -->
+  <section id="about-section" class="py-5 bg-white">
+    <div class="container py-4">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark">System Process Flow</h2>
+        <p class="text-muted">A structured lifecycle ensuring seamless volunteer coordination.</p>
+      </div>
+
+      <div class="row g-4 text-center">
+        <div class="col-md-3">
+          <div class="p-4 rounded-4 bg-light h-100 border">
+            <div class="stat-icon primary mx-auto mb-3"><i class="bi bi-person-lines-fill"></i></div>
+            <h5 class="fw-bold">1. Registration</h5>
+            <p class="text-muted small mb-0">Volunteers sign up with skills, phone, availability & profile details.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-4 rounded-4 bg-light h-100 border">
+            <div class="stat-icon warning mx-auto mb-3"><i class="bi bi-shield-check"></i></div>
+            <h5 class="fw-bold">2. Verification</h5>
+            <p class="text-muted small mb-0">Admins review applicant credentials and approve or reject profiles.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-4 rounded-4 bg-light h-100 border">
+            <div class="stat-icon info mx-auto mb-3"><i class="bi bi-calendar2-check"></i></div>
+            <h5 class="fw-bold">3. Event Assignment</h5>
+            <p class="text-muted small mb-0">Approved volunteers are assigned to specific upcoming events.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-4 rounded-4 bg-light h-100 border">
+            <div class="stat-icon success mx-auto mb-3"><i class="bi bi-clock-history"></i></div>
+            <h5 class="fw-bold">4. Hours & Reports</h5>
+            <p class="text-muted small mb-0">Real-time check-in/out records working hours automatically for reports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 border-top border-secondary">
+    <div class="container text-center">
+      <p class="mb-0 text-muted">&copy; 2026 VolunteerConnect - Volunteer Management & Scheduling System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
