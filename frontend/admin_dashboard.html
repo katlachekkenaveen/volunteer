@@ -63,11 +63,11 @@
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-person-circle fs-4 text-light"></i>
           <div>
-            <div class="fw-bold small text-white">System Admin</div>
-            <div class="text-muted extra-small">admin@volunteermsg.org</div>
+            <div class="fw-bold small text-white" id="admin-name">Administrator</div>
+            <div class="user-role-label">Platform Admin</div>
           </div>
         </div>
-        <a href="#" class="logout-btn text-danger fs-5" title="Sign Out"><i class="bi bi-power"></i></a>
+        <a href="#" class="logout-btn" title="Sign Out"><i class="bi bi-power fs-5"></i></a>
       </div>
     </aside>
 
@@ -159,7 +159,7 @@
                           <th>Action</th>
                         </tr>
                       </thead>
-                      <tbody id="pending-volunteers-table">
+                      <tbody id="pending-volunteers-table" class="pending-volunteers-tbody">
                         <!-- Rendered by JS -->
                       </tbody>
                     </table>
@@ -175,7 +175,7 @@
                 </div>
                 <div class="card-body">
                   <div style="height: 260px;">
-                    <canvas id="hoursChart"></canvas>
+                    <canvas id="hoursChartOverview"></canvas>
                   </div>
                 </div>
               </div>
@@ -204,7 +204,7 @@
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="pending-volunteers-table">
+                  <tbody id="verification-queue-table" class="pending-volunteers-tbody">
                     <!-- Rendered by JS -->
                   </tbody>
                 </table>
@@ -339,7 +339,7 @@
               <div class="card glass-card border-0 shadow-sm p-4">
                 <h5 class="fw-bold text-dark mb-3">Volunteer Hours Distribution</h5>
                 <div style="height: 300px;">
-                  <canvas id="hoursChart"></canvas>
+                  <canvas id="hoursChartAnalytics"></canvas>
                 </div>
               </div>
             </div>

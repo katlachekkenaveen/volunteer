@@ -1,7 +1,13 @@
+import os
+import sys
+from datetime import datetime, timedelta, timezone
+
+# Ensure volunteer root is in python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from backend.database import SessionLocal, engine, Base
 from backend.models import User, Event, EventAssignment, Attendance, UserRole, UserStatus, EventStatus, AssignmentStatus, AttendanceStatus
 from backend.auth import hash_password
-from datetime import datetime, timedelta
 
 def seed_data():
     # Ensure tables exist
@@ -172,8 +178,8 @@ def seed_data():
             att1 = Attendance(
                 event_id=event_objs[0].id,
                 volunteer_id=vol_objs[0].id,
-                check_in_time=datetime.utcnow() - timedelta(days=2, hours=4),
-                check_out_time=datetime.utcnow() - timedelta(days=2),
+                check_in_time=datetime.now(timezone.utc) - timedelta(days=2, hours=4),
+                check_out_time=datetime.now(timezone.utc) - timedelta(days=2),
                 hours_worked=4.0,
                 status=AttendanceStatus.COMPLETED.value,
                 notes="Worked on garden bed restoration and planting."
@@ -181,8 +187,8 @@ def seed_data():
             att2 = Attendance(
                 event_id=event_objs[0].id,
                 volunteer_id=vol_objs[1].id,
-                check_in_time=datetime.utcnow() - timedelta(days=2, hours=3, minutes=30),
-                check_out_time=datetime.utcnow() - timedelta(days=2),
+                check_in_time=datetime.now(timezone.utc) - timedelta(days=2, hours=3, minutes=30),
+                check_out_time=datetime.now(timezone.utc) - timedelta(days=2),
                 hours_worked=3.5,
                 status=AttendanceStatus.COMPLETED.value,
                 notes="Assisted with heavy lifting and equipment transport."

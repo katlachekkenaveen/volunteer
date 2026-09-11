@@ -5,13 +5,13 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models import User, Event, EventAssignment, UserStatus, EventStatus
 from backend.schemas import EventResponse, AssignmentResponse
-from backend.auth import get_current_approved_user
+from backend.auth import get_current_user, get_current_approved_user
 
 router = APIRouter(prefix="/api/volunteer", tags=["Volunteer Operations"])
 
 @router.get("/events", response_model=List[EventResponse])
 def get_volunteer_events(
-    current_user: User = Depends(get_current_approved_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     events = db.query(Event).filter(Event.status != EventStatus.CANCELLED.value).order_by(Event.event_date.asc()).all()
@@ -23,7 +23,7 @@ def get_volunteer_events(
     result = []
     for ev in events:
         count = db.query(EventAssignment).filter(EventAssignment.event_id == ev.id).count()
-        res = EventResponse.from_orm(ev)
+        res = EventResponse.model_validate(ev)
         res.assigned_count = count
         res.is_assigned = ev.id in assigned_event_ids
         result.append(res)
@@ -32,7 +32,7 @@ def get_volunteer_events(
 
 @router.get("/my-assignments", response_model=List[AssignmentResponse])
 def get_my_assignments(
-    current_user: User = Depends(get_current_approved_user),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     assignments = db.query(EventAssignment)\
@@ -80,14 +80,23 @@ def join_event(
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You are already assigned to this event.")
 
+    from sqlalchemy.exc import IntegrityError
+
     new_assign = EventAssignment(
         event_id=event_id,
         volunteer_id=current_user.id,
         status="confirmed"
     )
     db.add(new_assign)
-    db.commit()
-    db.refresh(new_assign)
+    try:
+        db.commit()
+        db.refresh(new_assign)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You are already registered or this event assignment already exists."
+        )
 
     return AssignmentResponse(
         id=new_assign.id,

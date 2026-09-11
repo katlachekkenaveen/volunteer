@@ -20,15 +20,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isAdminDashboard) {
       if (!currentUser || currentUser.role !== 'admin') {
         APIClient.showToast('Admin access required.', 'error');
-        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        setTimeout(() => { window.location.href = 'login.html'; }, 800);
         return;
       }
+      // Live backend token validation for admin privileges
+      APIClient.get('/auth/me').then(me => {
+        if (!me || me.role !== 'admin') {
+          APIClient.removeAuthToken();
+          APIClient.showToast('Unauthorized session. Please log in as admin.', 'error');
+          window.location.href = 'login.html';
+        }
+      }).catch(() => {
+        APIClient.removeAuthToken();
+        window.location.href = 'login.html';
+      });
     } else if (isVolunteerDashboard) {
       if (!currentUser) {
         APIClient.showToast('Please log in to access volunteer portal.', 'warning');
-        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+        setTimeout(() => { window.location.href = 'login.html'; }, 800);
         return;
       }
+      // Live backend token verification
+      APIClient.get('/auth/me').catch(() => {
+        APIClient.removeAuthToken();
+        window.location.href = 'login.html';
+      });
     }
   }
 
@@ -90,8 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (password.length < 6) {
-        APIClient.showToast('Password must be at least 6 characters.', 'warning');
+      if (password.length < 8) {
+        APIClient.showToast('Password must be at least 8 characters long.', 'warning');
+        return;
+      }
+
+      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+        APIClient.showToast('Password must contain both letters and numbers.', 'warning');
         return;
       }
 
@@ -112,7 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         registerForm.reset();
         
-        // Switch tab to login if on auth page
+        // Pre-fill login email and switch tab
+        const loginEmailInput = document.getElementById('login-email');
+        if (loginEmailInput) loginEmailInput.value = email;
+
         const loginTab = document.getElementById('login-tab');
         if (loginTab) {
           const bsTab = new bootstrap.Tab(loginTab);
@@ -143,8 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (password.length < 6) {
-        APIClient.showToast('Password must be at least 6 characters.', 'warning');
+      if (password.length < 8) {
+        APIClient.showToast('Password must be at least 8 characters long.', 'warning');
+        return;
+      }
+
+      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+        APIClient.showToast('Password must contain both letters and numbers.', 'warning');
         return;
       }
 
