@@ -60,46 +60,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Pending Verification Queue ---
   async function loadPendingVolunteers() {
-    if (!pendingTableBody) return;
+    const pendingTables = document.querySelectorAll('.pending-volunteers-tbody');
+    if (!pendingTables.length) return;
     try {
       const pending = await APIClient.get('/admin/volunteers?status=pending');
-      pendingTableBody.innerHTML = '';
+      
+      pendingTables.forEach(tbody => {
+        tbody.innerHTML = '';
+        if (pending.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                <i class="bi bi-check-circle fs-3 d-block mb-2 text-success"></i>
+                No pending registration requests!
+              </td>
+            </tr>
+          `;
+          return;
+        }
 
-      if (pending.length === 0) {
-        pendingTableBody.innerHTML = `
-          <tr>
-            <td colspan="6" class="text-center py-4 text-muted">
-              <i class="bi bi-check-circle fs-3 d-block mb-2 text-success"></i>
-              No pending registration requests!
+        pending.forEach(vol => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <div class="fw-bold">${escapeHtml(vol.name)}</div>
+              <div class="small text-muted">${escapeHtml(vol.email)}</div>
             </td>
-          </tr>
-        `;
-        return;
-      }
-
-      pending.forEach(vol => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>
-            <div class="fw-bold">${escapeHtml(vol.name)}</div>
-            <div class="small text-muted">${escapeHtml(vol.email)}</div>
-          </td>
-          <td>${escapeHtml(vol.phone)}</td>
-          <td><span class="badge bg-light text-dark border">${escapeHtml(vol.skills || 'N/A')}</span></td>
-          <td>${escapeHtml(vol.availability || 'Flexible')}</td>
-          <td><span class="badge-status badge-pending">Pending Approval</span></td>
-          <td>
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-success px-3" onclick="updateVolunteerStatus(${vol.id}, 'approved')">
-                <i class="bi bi-check-lg me-1"></i>Approve
-              </button>
-              <button class="btn btn-outline-danger px-3" onclick="updateVolunteerStatus(${vol.id}, 'rejected')">
-                <i class="bi bi-x-lg me-1"></i>Reject
-              </button>
-            </div>
-          </td>
-        `;
-        pendingTableBody.appendChild(tr);
+            <td>${escapeHtml(vol.phone)}</td>
+            <td><span class="badge bg-light text-dark border">${escapeHtml(vol.skills || 'N/A')}</span></td>
+            <td>${escapeHtml(vol.availability || 'Flexible')}</td>
+            <td><span class="badge-status badge-pending">Pending Approval</span></td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-success px-3" onclick="updateVolunteerStatus(${vol.id}, 'approved')">
+                  <i class="bi bi-check-lg me-1"></i>Approve
+                </button>
+                <button class="btn btn-outline-danger px-3" onclick="updateVolunteerStatus(${vol.id}, 'rejected')">
+                  <i class="bi bi-x-lg me-1"></i>Reject
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
       });
     } catch (err) {
       APIClient.showToast('Error loading verification queue.', 'error');
@@ -305,37 +308,34 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // --- Assignments ---
+  async function populateApprovedVolunteersDropdown() {
+    const assignVolSelect = document.getElementById('assign-volunteer-select');
+    if (!assignVolSelect) return;
+    try {
+      const approvedVols = await APIClient.get('/admin/volunteers?status=approved');
+      assignVolSelect.innerHTML = '<option value="">Select Volunteer...</option>';
+      approvedVols.forEach(v => {
+        assignVolSelect.innerHTML += `<option value="${v.id}">${escapeHtml(v.name)} (${escapeHtml(v.skills || 'General')})</option>`;
+      });
+    } catch (err) {
+      console.error('Error fetching approved volunteers:', err);
+    }
+  }
+
   async function loadAssignments() {
     try {
       assignmentsList = await APIClient.get('/admin/assignments');
-      
-      // Populate Volunteer Dropdown for assignment modal
-      const assignVolSelect = document.getElementById('assign-volunteer-select');
-      if (assignVolSelect) {
-        assignVolSelect.innerHTML = '<option value="">Select Volunteer...</option>';
-        const approvedVols = volunteersList.filter(v => v.status === 'approved');
-        approvedVols.forEach(v => {
-          assignVolSelect.innerHTML += `<option value="${v.id}">${escapeHtml(v.name)} (${escapeHtml(v.skills || 'General')})</option>`;
-        });
-      }
+      await populateApprovedVolunteersDropdown();
     } catch (err) {
       console.error(err);
     }
   }
 
-  window.openAssignModal = (eventId) => {
+  window.openAssignModal = async (eventId) => {
     const assignEventSelect = document.getElementById('assign-event-select');
     if (assignEventSelect) assignEventSelect.value = eventId;
     
-    // Refresh approved volunteers select list
-    const assignVolSelect = document.getElementById('assign-volunteer-select');
-    if (assignVolSelect && volunteersList.length > 0) {
-      assignVolSelect.innerHTML = '<option value="">Select Volunteer...</option>';
-      const approvedVols = volunteersList.filter(v => v.status === 'approved');
-      approvedVols.forEach(v => {
-        assignVolSelect.innerHTML += `<option value="${v.id}">${escapeHtml(v.name)} (${escapeHtml(v.skills || 'General')})</option>`;
-      });
-    }
+    await populateApprovedVolunteersDropdown();
 
     const modalEl = document.getElementById('assignVolunteerModal');
     if (modalEl) {
@@ -417,6 +417,31 @@ document.addEventListener('DOMContentLoaded', () => {
   if (volSearchInput) volSearchInput.addEventListener('input', debounce(loadVolunteersDirectory, 300));
   if (volStatusSelect) volStatusSelect.addEventListener('change', loadVolunteersDirectory);
   if (eventStatusSelect) eventStatusSelect.addEventListener('change', loadEvents);
+
+  // Explicit Sidebar Tab Switcher to guarantee instant switching
+  const sidebarLinks = document.querySelectorAll('.sidebar-menu .sidebar-link');
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetSelector = link.getAttribute('data-bs-target');
+      if (!targetSelector) return;
+
+      const targetPane = document.querySelector(targetSelector);
+      if (!targetPane) return;
+
+      // Update active sidebar link
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      // Update tab pane visibility
+      const tabPanes = document.querySelectorAll('.tab-content .tab-pane');
+      tabPanes.forEach(pane => {
+        pane.classList.remove('show', 'active');
+      });
+
+      targetPane.classList.add('show', 'active');
+    });
+  });
 
   function escapeHtml(str) {
     if (!str) return '';

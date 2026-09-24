@@ -2,8 +2,8 @@
    Volunteer Management System - API Client & Toast Utilities
    ========================================================================== */
 
-const API_BASE_URL = window.location.origin.includes('8000') || window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-  ? '/api'
+const API_BASE_URL = (window.location.protocol.startsWith('http'))
+  ? `${window.location.origin}/api`
   : 'http://127.0.0.1:8000/api';
 
 class APIClient {
@@ -88,6 +88,46 @@ class APIClient {
 
   static delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
+  }
+
+  static async downloadBlob(endpoint, defaultFilename = 'report.csv') {
+    const token = this.getAuthToken();
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.removeAuthToken();
+          this.showToast('Session expired. Please log in again.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+          return;
+        }
+        throw new Error('Failed to export data.');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = defaultFilename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      this.showToast('Report downloaded successfully.', 'success');
+    } catch (err) {
+      console.error('Download error:', err);
+      this.showToast(err.message || 'Failed to download file.', 'error');
+    }
   }
 
   static showToast(message, type = 'info') {

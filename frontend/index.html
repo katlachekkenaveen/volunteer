@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Volunteer Connect - Volunteer Management & Scheduling System</title>
-  <meta name="description" content="Streamlined volunteer registration, event scheduling, admin verification, and automatic working hours tracking.">
-  
+  <meta name="description"
+    content="Streamlined volunteer registration, event scheduling, admin verification, and automatic working hours tracking.">
+
   <!-- Bootstrap 5 CSS & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
   <!-- Navigation Bar -->
@@ -53,9 +57,10 @@
           <span class="badge bg-white text-primary fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
             <i class="bi bi-star-fill text-warning me-1"></i> Community Empowerment Platform
           </span>
-          <h1 class="display-4 fw-extrabold mb-3">Empowering Volunteers, Transforming Communities</h1>
-          <p class="lead text-light mb-4 opacity-90">
-            A comprehensive system for volunteer registration, admin verification, real-time event assignment, check-in tracking, and automated work hour reporting.
+          <h1 class="display-4 text-black fw-extrabold mb-3">Empowering Volunteers, Transforming Communities</h1>
+          <p class="lead text-black mb-4 opacity-90">
+            A comprehensive system for volunteer registration, admin verification, real-time event assignment, check-in
+            tracking, and automated work hour reporting.
           </p>
           <div class="d-flex flex-wrap gap-3">
             <a href="login.html?tab=register" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
@@ -68,7 +73,8 @@
         </div>
         <div class="col-lg-5 text-center">
           <div class="glass-card p-4 text-dark text-start">
-            <h4 class="fw-bold mb-3 text-primary"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Overview</h4>
+            <h4 class="fw-bold mb-3 text-primary"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick
+              Overview</h4>
             <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
               <li class="d-flex align-items-start gap-3">
                 <i class="bi bi-check-circle-fill text-success fs-5"></i>
@@ -141,7 +147,8 @@
             <div class="card-body">
               <span class="badge-status badge-upcoming mb-2">Upcoming</span>
               <h5 class="fw-bold text-dark">City Park Spring Clean-up</h5>
-              <p class="text-muted small">Cleaning up Central Park, planting native flowers, and restoring community garden beds.</p>
+              <p class="text-muted small">Cleaning up Central Park, planting native flowers, and restoring community
+                garden beds.</p>
               <div class="text-muted small border-top pt-3 mt-2">
                 <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Central Park Pavilion</div>
                 <div><i class="bi bi-calendar-event text-primary me-2"></i>Sep 05, 2026</div>
@@ -158,7 +165,8 @@
             <div class="card-body">
               <span class="badge-status badge-upcoming mb-2">Upcoming</span>
               <h5 class="fw-bold text-dark">Community Food Pantry Drive</h5>
-              <p class="text-muted small">Sorting food donations, packing care bundles, and assisting families at the local food bank.</p>
+              <p class="text-muted small">Sorting food donations, packing care bundles, and assisting families at the
+                local food bank.</p>
               <div class="text-muted small border-top pt-3 mt-2">
                 <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>St. Mary Community Center</div>
                 <div><i class="bi bi-calendar-event text-primary me-2"></i>Sep 12, 2026</div>
@@ -175,7 +183,8 @@
             <div class="card-body">
               <span class="badge-status badge-upcoming mb-2">Upcoming</span>
               <h5 class="fw-bold text-dark">Youth Coding & Literacy Workshop</h5>
-              <p class="text-muted small">Mentoring middle school students in basic computer skills and reading comprehension.</p>
+              <p class="text-muted small">Mentoring middle school students in basic computer skills and reading
+                comprehension.</p>
               <div class="text-muted small border-top pt-3 mt-2">
                 <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-2"></i>Downtown Public Library</div>
                 <div><i class="bi bi-calendar-event text-primary me-2"></i>Aug 25, 2026</div>
@@ -191,40 +200,60 @@
   </section>
 
   <!-- Process Flow Section -->
-  <section id="about-section" class="py-5 bg-white">
+  <section id="about-section" class="py-5 bg-white position-relative overflow-hidden">
     <div class="container py-4">
       <div class="text-center mb-5">
-        <h2 class="fw-bold text-dark">System Process Flow</h2>
+        <span class="badge bg-primary-subtle text-primary fw-bold text-uppercase px-3 py-2 rounded-pill mb-2">How It Works</span>
+        <h2 class="fw-extrabold text-dark mt-1">System Process Flow</h2>
         <p class="text-muted">A structured lifecycle ensuring seamless volunteer coordination.</p>
       </div>
 
-      <div class="row g-4 text-center">
-        <div class="col-md-3">
-          <div class="p-4 rounded-4 bg-light h-100 border">
-            <div class="stat-icon primary mx-auto mb-3"><i class="bi bi-person-lines-fill"></i></div>
-            <h5 class="fw-bold">1. Registration</h5>
-            <p class="text-muted small mb-0">Volunteers sign up with skills, phone, availability & profile details.</p>
-          </div>
+      <!-- Process Flow Steps Container with Animated Connecting Line -->
+      <div class="position-relative process-flow-wrapper">
+        <!-- Connecting Line Background for Desktop -->
+        <div class="process-line-track d-none d-lg-block">
+          <div class="process-line-fill"></div>
         </div>
-        <div class="col-md-3">
-          <div class="p-4 rounded-4 bg-light h-100 border">
-            <div class="stat-icon warning mx-auto mb-3"><i class="bi bi-shield-check"></i></div>
-            <h5 class="fw-bold">2. Verification</h5>
-            <p class="text-muted small mb-0">Admins review applicant credentials and approve or reject profiles.</p>
+
+        <div class="row g-4 text-center position-relative">
+          <!-- Step 1 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="process-card p-4 rounded-4 bg-white h-100 border shadow-sm text-center position-relative">
+              <div class="process-step-pill">Step 1</div>
+              <div class="stat-icon primary mx-auto mb-3 process-icon"><i class="bi bi-person-lines-fill"></i></div>
+              <h5 class="fw-bold text-dark mb-2">1. Registration</h5>
+              <p class="text-muted small mb-0">Volunteers sign up with skills, phone, availability & profile details.</p>
+            </div>
           </div>
-        </div>
-        <div class="col-md-3">
-          <div class="p-4 rounded-4 bg-light h-100 border">
-            <div class="stat-icon info mx-auto mb-3"><i class="bi bi-calendar2-check"></i></div>
-            <h5 class="fw-bold">3. Event Assignment</h5>
-            <p class="text-muted small mb-0">Approved volunteers are assigned to specific upcoming events.</p>
+
+          <!-- Step 2 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="process-card p-4 rounded-4 bg-white h-100 border shadow-sm text-center position-relative">
+              <div class="process-step-pill">Step 2</div>
+              <div class="stat-icon warning mx-auto mb-3 process-icon"><i class="bi bi-shield-check"></i></div>
+              <h5 class="fw-bold text-dark mb-2">2. Verification</h5>
+              <p class="text-muted small mb-0">Admins review applicant credentials and approve or reject profiles.</p>
+            </div>
           </div>
-        </div>
-        <div class="col-md-3">
-          <div class="p-4 rounded-4 bg-light h-100 border">
-            <div class="stat-icon success mx-auto mb-3"><i class="bi bi-clock-history"></i></div>
-            <h5 class="fw-bold">4. Hours & Reports</h5>
-            <p class="text-muted small mb-0">Real-time check-in/out records working hours automatically for reports.</p>
+
+          <!-- Step 3 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="process-card p-4 rounded-4 bg-white h-100 border shadow-sm text-center position-relative">
+              <div class="process-step-pill">Step 3</div>
+              <div class="stat-icon info mx-auto mb-3 process-icon"><i class="bi bi-calendar2-check"></i></div>
+              <h5 class="fw-bold text-dark mb-2">3. Event Assignment</h5>
+              <p class="text-muted small mb-0">Approved volunteers are assigned to specific upcoming events.</p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="col-lg-3 col-md-6">
+            <div class="process-card p-4 rounded-4 bg-white h-100 border shadow-sm text-center position-relative">
+              <div class="process-step-pill">Step 4</div>
+              <div class="stat-icon success mx-auto mb-3 process-icon"><i class="bi bi-clock-history"></i></div>
+              <h5 class="fw-bold text-dark mb-2">4. Hours & Reports</h5>
+              <p class="text-muted small mb-0">Real-time check-in/out records working hours automatically for reports.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -234,7 +263,8 @@
   <!-- Footer -->
   <footer class="bg-dark text-white py-4 border-top border-secondary">
     <div class="container text-center">
-      <p class="mb-0 text-muted">&copy; 2026 VolunteerConnect - Volunteer Management & Scheduling System. All rights reserved.</p>
+      <p class="mb-0 text-muted">&copy; 2026 VolunteerConnect - Volunteer Management & Scheduling System. All rights
+        reserved.</p>
     </div>
   </footer>
 
@@ -242,4 +272,5 @@
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
 </body>
+
 </html>

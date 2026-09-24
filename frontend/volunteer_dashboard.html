@@ -56,10 +56,10 @@
           <i class="bi bi-person-circle fs-4 text-light"></i>
           <div>
             <div class="fw-bold small text-white" id="volunteer-name">Volunteer</div>
-            <div class="text-muted extra-small">Volunteer Member</div>
+            <div class="user-role-label">Volunteer Member</div>
           </div>
         </div>
-        <a href="#" class="logout-btn text-danger fs-5" title="Sign Out"><i class="bi bi-power"></i></a>
+        <a href="#" class="logout-btn" title="Sign Out"><i class="bi bi-power fs-5"></i></a>
       </div>
     </aside>
 
@@ -122,13 +122,27 @@
             <div class="card-body p-0">
               <div class="timer-box">
                 <div class="row align-items-center">
-                  <div class="col-lg-8">
-                    <span class="badge bg-white text-primary fw-bold px-3 py-1 rounded-pill mb-2">Shift Tracker</span>
-                    <h4 class="fw-bold mb-1" id="active-shift-event">No Active Shift</h4>
-                    <p class="opacity-75 small mb-0">Check in to record your working hours for scheduled volunteer events.</p>
+                  <div class="col-lg-7">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <span class="badge bg-white text-primary fw-bold px-3 py-1 rounded-pill">Shift Tracker</span>
+                      <span class="badge bg-success text-white fw-bold px-3 py-1 rounded-pill d-none" id="main-tracker-status-live">
+                        <i class="bi bi-record-fill text-danger me-1 animate-pulse"></i> LIVE
+                      </span>
+                    </div>
+                    <h4 class="fw-bold mb-1 active-shift-title-text" id="active-shift-event-main">No Active Shift</h4>
+                    <p class="opacity-75 small mb-0" id="active-shift-desc-main">Check in to record your working hours for scheduled volunteer events.</p>
                   </div>
-                  <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                    <div class="timer-digits mb-2" id="active-shift-timer">00:00:00</div>
+                  <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                    <div class="timer-digits mb-3 active-shift-timer-text" id="active-shift-timer-main">00:00:00</div>
+                    <div class="d-flex justify-content-lg-end gap-2 flex-wrap" id="main-shift-actions">
+                      <!-- Action buttons dynamically managed by JS: Quick Check-In or Quick Check-Out -->
+                      <button class="btn btn-light fw-bold text-primary px-3 shadow-sm" id="btn-quick-checkin-main">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Quick Check-In
+                      </button>
+                      <button class="btn btn-danger fw-bold px-4 shadow-sm d-none" id="btn-quick-checkout-main">
+                        <i class="bi bi-stop-circle me-1"></i> Check-Out & Save Hours
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -138,7 +152,7 @@
           <!-- Assigned Events Cards Section -->
           <div class="mb-4">
             <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-check text-primary me-2"></i>My Scheduled Events</h5>
-            <div class="row g-4" id="assigned-events-container">
+            <div class="row g-4" id="my-assigned-events-container">
               <!-- Rendered dynamically by JS -->
             </div>
           </div>
@@ -150,7 +164,7 @@
           <div class="card glass-card border-0 shadow-sm p-4">
             <h5 class="fw-bold text-dark mb-3">Community Events & Openings</h5>
             <p class="text-muted small">Browse all upcoming events. Click "Join Event" to request assignment.</p>
-            <div class="row g-4" id="assigned-events-container">
+            <div class="row g-4" id="all-available-events-container">
               <!-- Rendered dynamically by JS -->
             </div>
           </div>
@@ -188,8 +202,8 @@
                 <span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-2 rounded-pill mb-3">
                   <i class="bi bi-record-fill text-danger me-1 animate-pulse"></i> Shift Currently Active
                 </span>
-                <h4 class="fw-bold text-dark mb-2" id="active-shift-event">Event Name</h4>
-                <div class="timer-digits text-primary my-3" id="active-shift-timer">00:00:00</div>
+                <h4 class="fw-bold text-dark mb-2 active-shift-title-text" id="active-shift-event-panel">Event Name</h4>
+                <div class="timer-digits text-primary my-3 active-shift-timer-text" id="active-shift-timer-panel">00:00:00</div>
                 <p class="text-muted small mb-4">Your shift working hours are being logged automatically in real time.</p>
 
                 <button class="btn btn-danger btn-lg w-100 fw-bold shadow-sm" id="btn-check-out">
@@ -279,6 +293,71 @@
 
     </main>
 
+  </div>
+
+  <!-- Quick Check-In Modal for Main Dashboard -->
+  <div class="modal fade" id="quickCheckInModal" tabindex="-1" aria-labelledby="quickCheckInModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="quickCheckInModalLabel">
+            <i class="bi bi-box-arrow-in-right text-primary me-2"></i>Quick Shift Check-In
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <p class="text-muted small">Select the event you are reporting to and check in immediately.</p>
+          <div class="mb-3">
+            <label for="quick-checkin-event-select" class="form-label fw-semibold">Event *</label>
+            <select class="form-select" id="quick-checkin-event-select">
+              <option value="">Select Event to Check-In...</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="quick-checkin-notes" class="form-label fw-semibold">Arrival Notes (Optional)</label>
+            <input type="text" class="form-control" id="quick-checkin-notes" placeholder="e.g. Arrived on site, ready at main hall">
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary fw-bold" id="btn-confirm-quick-checkin">
+            <i class="bi bi-play-fill me-1"></i> Start Shift Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Check-Out Modal -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-md);">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-danger" id="checkoutModalLabel">
+            <i class="bi bi-stop-circle-fill me-2"></i>End Volunteer Shift
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <div class="p-3 bg-light rounded mb-3">
+            <div class="small text-muted mb-1">Active Event:</div>
+            <div class="fw-bold fs-6 text-dark" id="modal-checkout-event-name">Event Name</div>
+            <div class="small text-muted mt-2 mb-1">Current Shift Duration:</div>
+            <div class="fw-bold fs-4 text-primary font-monospace" id="modal-checkout-timer">00:00:00</div>
+          </div>
+          <div class="mb-3">
+            <label for="checkout-notes-input" class="form-label fw-semibold">Shift Summary / Completion Notes (Optional)</label>
+            <textarea class="form-control" id="checkout-notes-input" rows="3" placeholder="Briefly describe what tasks were accomplished during this shift..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Continue Shift</button>
+          <button type="button" class="btn btn-danger fw-bold px-4" id="btn-confirm-checkout">
+            <i class="bi bi-check2-circle me-1"></i> Confirm & Log Hours
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

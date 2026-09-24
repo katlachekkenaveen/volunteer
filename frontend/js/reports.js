@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportVolsBtn = document.getElementById('btn-export-volunteers');
   const exportAttBtn = document.getElementById('btn-export-attendance');
 
-  let hoursChart = null;
+  let hoursOverviewChart = null;
+  let hoursAnalyticsChart = null;
   let skillsChart = null;
 
   initReports();
@@ -19,20 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function renderAnalyticsCharts() {
-    const hoursCanvas = document.getElementById('hoursChart');
+    const hoursOverviewCanvas = document.getElementById('hoursChartOverview');
+    const hoursAnalyticsCanvas = document.getElementById('hoursChartAnalytics');
     const skillsCanvas = document.getElementById('skillsChart');
-
-    if (!hoursCanvas || !skillsCanvas) return;
 
     try {
       const data = await APIClient.get('/reports/charts');
 
-      // 1. Event Hours Bar Chart
+      // 1. Event Hours Data
       const eventNames = Object.keys(data.event_hours || {});
       const eventHours = Object.values(data.event_hours || {});
 
-      if (hoursChart) hoursChart.destroy();
-      hoursChart = new Chart(hoursCanvas.getContext('2d'), {
+      const chartConfig = {
         type: 'bar',
         data: {
           labels: eventNames.length ? eventNames : ['No Data'],
@@ -58,32 +57,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
         }
-      });
+      };
+
+      if (hoursOverviewCanvas) {
+        if (hoursOverviewChart) hoursOverviewChart.destroy();
+        hoursOverviewChart = new Chart(hoursOverviewCanvas.getContext('2d'), chartConfig);
+      }
+
+      if (hoursAnalyticsCanvas) {
+        if (hoursAnalyticsChart) hoursAnalyticsChart.destroy();
+        hoursAnalyticsChart = new Chart(hoursAnalyticsCanvas.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
+      }
 
       // 2. Skills Doughnut Chart
-      const skillNames = Object.keys(data.skills_distribution || {});
-      const skillCounts = Object.values(data.skills_distribution || {});
+      if (skillsCanvas) {
+        const skillNames = Object.keys(data.skills_distribution || {});
+        const skillCounts = Object.values(data.skills_distribution || {});
 
-      if (skillsChart) skillsChart.destroy();
-      skillsChart = new Chart(skillsCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: skillNames.length ? skillNames : ['General Support'],
-          datasets: [{
-            data: skillCounts.length ? skillCounts : [1],
-            backgroundColor: [
-              '#6366f1', '#10b981', '#f59e0b', '#0ea5e9', '#ec4899', '#8b5cf6'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right' }
+        if (skillsChart) skillsChart.destroy();
+        skillsChart = new Chart(skillsCanvas.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: skillNames.length ? skillNames : ['General Support'],
+            datasets: [{
+              data: skillCounts.length ? skillCounts : [1],
+              backgroundColor: [
+                '#6366f1', '#10b981', '#f59e0b', '#0ea5e9', '#ec4899', '#8b5cf6'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'right' }
+            }
           }
-        }
-      });
+        });
+      }
     } catch (err) {
       console.error('Failed to load chart data:', err);
     }
@@ -91,14 +102,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setupCSVExport() {
     if (exportVolsBtn) {
-      exportVolsBtn.addEventListener('click', () => {
-        window.open('/api/reports/export/volunteers/csv', '_blank');
+      exportVolsBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await APIClient.downloadBlob('/reports/export/volunteers/csv', 'volunteer_report.csv');
       });
     }
 
     if (exportAttBtn) {
-      exportAttBtn.addEventListener('click', () => {
-        window.open('/api/reports/export/attendance/csv', '_blank');
+      exportAttBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await APIClient.downloadBlob('/reports/export/attendance/csv', 'attendance_hours_report.csv');
       });
     }
   }

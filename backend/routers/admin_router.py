@@ -27,7 +27,9 @@ def get_volunteers(
         query = query.filter(User.status == status.lower())
     
     if search:
-        search_term = f"%{search}%"
+        # Sanitize search term by escaping SQL LIKE wildcards
+        clean_search = search.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")[:100]
+        search_term = f"%{clean_search}%"
         query = query.filter(
             or_(
                 User.name.ilike(search_term),
@@ -44,7 +46,7 @@ def get_volunteers(
         tot_hrs = db.query(func.sum(Attendance.hours_worked))\
                     .filter(Attendance.volunteer_id == vol.id, Attendance.status == "completed")\
                     .scalar()
-        res = UserResponse.from_orm(vol)
+        res = UserResponse.model_validate(vol)
         res.total_hours = round(float(tot_hrs), 2) if tot_hrs else 0.0
         result.append(res)
     
@@ -72,7 +74,7 @@ def update_volunteer_status(
     tot_hrs = db.query(func.sum(Attendance.hours_worked))\
                 .filter(Attendance.volunteer_id == volunteer.id, Attendance.status == "completed")\
                 .scalar()
-    res = UserResponse.from_orm(volunteer)
+    res = UserResponse.model_validate(volunteer)
     res.total_hours = round(float(tot_hrs), 2) if tot_hrs else 0.0
     return res
 
@@ -106,7 +108,7 @@ def get_all_events(
     result = []
     for ev in events:
         count = db.query(EventAssignment).filter(EventAssignment.event_id == ev.id).count()
-        res = EventResponse.from_orm(ev)
+        res = EventResponse.model_validate(ev)
         res.assigned_count = count
         result.append(res)
     return result
@@ -132,7 +134,7 @@ def create_event(
     db.commit()
     db.refresh(new_event)
 
-    res = EventResponse.from_orm(new_event)
+    res = EventResponse.model_validate(new_event)
     res.assigned_count = 0
     return res
 
@@ -168,7 +170,7 @@ def update_event(
     db.refresh(event)
 
     count = db.query(EventAssignment).filter(EventAssignment.event_id == event.id).count()
-    res = EventResponse.from_orm(event)
+    res = EventResponse.model_validate(event)
     res.assigned_count = count
     return res
 
@@ -218,14 +220,23 @@ def assign_volunteer_to_event(
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Volunteer is already assigned to this event.")
 
+    from sqlalchemy.exc import IntegrityError
+
     new_assign = EventAssignment(
         event_id=data.event_id,
         volunteer_id=data.volunteer_id,
         status="assigned"
     )
     db.add(new_assign)
-    db.commit()
-    db.refresh(new_assign)
+    try:
+        db.commit()
+        db.refresh(new_assign)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This volunteer is already assigned to this event."
+        )
 
     return AssignmentResponse(
         id=new_assign.id,

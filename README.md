@@ -1,171 +1,228 @@
-# 🤝 Volunteer Management & Scheduling System
+# 🤝 VolunteerConnect - Volunteer Management & Scheduling System
 
-A full-stack, professional **Volunteer Management and Scheduling System** built with **FastAPI (Python)**, **MySQL / SQLite**, **HTML5/CSS3/JavaScript (ES6)**, **Bootstrap 5**, and **Chart.js**.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-red.svg)](https://www.sqlalchemy.org/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple.svg)](https://getbootstrap.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+**VolunteerConnect** is an enterprise-ready, full-stack Volunteer Management & Scheduling platform designed to modernize community outreach. It streamlines volunteer onboarding, administrative verification, event assignment, sub-second live shift time tracking, and automated audit-ready reporting.
+
+---
+
+## 📑 Table of Contents
+- [Key Features & Modules](#-key-features--modules)
+- [System Architecture](#-system-architecture)
+- [Security Hardening & Best Practices](#-security-hardening--best-practices)
+- [Tech Stack](#-tech-stack)
+- [Quick Start Guide](#-quick-start-guide)
+- [Demo Credentials](#-demo-credentials)
+- [API Documentation](#-api-documentation)
+- [Project Directory Structure](#-project-directory-structure)
+- [License & Authors](#-license--authors)
 
 ---
 
 ## 🌟 Key Features & Modules
 
-### 1. 📝 Volunteer Registration & Authentication
-* Public registration form capturing Name, Email, Phone, Skills, Availability, Password, and Bio.
-* Role-Based Access Control (RBAC) with JWT Bearer tokens (`admin` vs. `volunteer`).
-* Registration verification workflow (`pending` -> `approved` / `rejected`).
+### 1. 🛡️ Administrative Portal
+* **Real-time Overview Metrics**: Instant visualization of registered volunteers, active/approved members, upcoming events, and cumulative service hours.
+* **Verification Queue**: Review incoming volunteer applications with a single click to approve or reject.
+* **Volunteer Directory**: Search volunteers by name, email, or skill keywords with status filters (All, Approved, Pending, Rejected).
+* **Event Management (CRUD)**: Create, schedule, edit, and cancel events with max volunteer capacity caps and location mapping.
+* **Roster Assignments**: Assign vetted volunteers directly to scheduled event rosters.
+* **Auditing & Analytics**: Export clean, sanitized CSV reports for volunteer rosters and attendance logs.
 
-### 2. 🛡️ Admin Dashboard & Verification Queue
-* **Live Overview**: High-level stat cards (Total Volunteers, Active Volunteers, Total Events, Total Working Hours).
-* **Verification Queue**: Review pending volunteer applications, inspect skills, and click to approve or reject.
-* **Volunteer Directory**: Search and filter registered volunteers by status or skill; view individual hours worked.
-* **Event Management**: Create, edit, and delete events (Name, Location, Date, Time Range, Max Volunteers Capacity).
-* **Event Assignment**: Assign approved volunteers to scheduled events.
+### 2. ⏱️ Volunteer Self-Service & Live Shift Tracker
+* **One-Click Quick Check-In**: Start shift time tracking directly from the dashboard banner or assigned event cards.
+* **Live Shift Stopwatch**: Real-time ticker (`HH:MM:SS`) derived from UTC server timestamps with automatic timezone normalization.
+* **Interactive Check-Out Modal**: End shifts with optional completion notes; automatically calculates decimal working hours.
+* **Event Self-Registration**: Browse open community opportunities with live capacity indicators (e.g. `2/15 spots filled`) and join in one click.
+* **Personal Attendance Ledger**: Transparent history of all completed shifts with check-in/out timestamps and total hours earned.
+* **Profile Settings**: Update contact details, availability, and skills.
 
-### 3. 📅 Volunteer Portal & Self-Service
-* Personal dashboard displaying assigned upcoming events, event capacity, and total hours contributed.
-* Event browsing and self-registration (`Join Event`).
-* Volunteer profile management (update skills, phone, availability, and bio).
-
-### 4. ⏱️ Real-Time Shift Timer & Automatic Hours Calculation
-* One-click **Check-In** for active event shifts with optional arrival notes.
-* Live **elapsed time clock** (`HH:MM:SS`) on the volunteer dashboard during active shifts.
-* **Check-Out** automatically calculates total working hours (`hours_worked = (check_out - check_in)` in decimal hours).
-* Complete, audit-ready attendance history logs for volunteers and admins.
-
-### 5. 📊 Reports, Analytics & Data Export
-* Interactive visual charts (Monthly Hours by Event, Skills Distribution).
-* Downloadable **CSV Reports** for Volunteer Directories and Attendance Hours logs (`/api/reports/export/...`).
+### 3. 🎨 Animated Public Landing Page
+* **Hero Section**: Modern glassmorphic layout highlighting organizational impact.
+* **System Process Flow**: Animated workflow beam connecting the 4 key stages: *Registration &rarr; Verification &rarr; Event Assignment &rarr; Hours & Reports*.
+* **Featured Events**: Public preview of upcoming community projects with direct registration links.
 
 ---
 
-## 🏗️ System Architecture & Technology Stack
+## 🏗️ System Architecture
 
-* **Frontend**: HTML5, Vanilla CSS3 (Custom Glassmorphism Design System), JavaScript (ES6 Fetch API), Bootstrap 5.3, Bootstrap Icons, Chart.js.
-* **Backend**: Python 3.14 + FastAPI + Pydantic v2 + SQLAlchemy ORM + PyJWT + Passlib + Uvicorn.
-* **Database**: MySQL (compatible `backend/schema.sql` included) with zero-configuration **SQLite auto-fallback** (`volunteers.db`) for instant local testing.
+```
++-------------------------------------------------------------------------+
+|                              Client Layer                               |
+|   - Responsive Glassmorphic UI (HTML5, Bootstrap 5.3, Plus Jakarta)     |
+|   - Dynamic Controllers (Vanilla JS ES6 Modules, Fetch API)             |
+|   - Real-time Active Shift Timer & Dynamic Tab Switchers                |
++------------------------------------+------------------------------------+
+                                     |  HTTP/JSON (REST API)
+                                     v
++-------------------------------------------------------------------------+
+|                              Server Layer                               |
+|   - FastAPI (Asynchronous Python 3.12 Web Framework)                    |
+|   - Security Middleware (CORS Whitelist, Defense-in-Depth Headers)      |
+|   - JWT (JSON Web Tokens) with PBKDF2-SHA256 & Bcrypt Password Hashing  |
+|   - Modular Routers: Auth, Admin, Volunteer, Attendance, Reports        |
++------------------------------------+------------------------------------+
+                                     |  SQLAlchemy 2.0 ORM
+                                     v
++-------------------------------------------------------------------------+
+|                             Database Layer                              |
+|   - SQLite / MySQL Relational Architecture                              |
+|   - Foreign Key Cascades & Unique Constraints                           |
+|   - Automated Transaction Integrity & Rollbacks                         |
++-------------------------------------------------------------------------+
+```
 
 ---
 
-## 🚀 Getting Started & Local Installation Guide
+## 🔒 Security Hardening & Best Practices
 
-### Prerequisites
-* Python 3.10+ installed
-* MySQL Server (Optional, SQLite is enabled out-of-the-box for instant zero-setup execution)
+The codebase has undergone security review and defense-in-depth hardening:
 
-### 1. Clone & Set Up Project Environment
+- **Timing Attack Mitigation**: Secret admin registration keys are compared using constant-time `hmac.compare_digest()`.
+- **Password Complexity**: Enforced minimum 8 characters with alphanumeric requirements (`[a-zA-Z]` + `[0-9]`) validated on backend schemas and frontend forms.
+- **CSV Formula Injection (DDE)**: Exported spreadsheets escape leading formula triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) with single quotes via `sanitize_csv_field()`.
+- **SQL LIKE Sanitization**: Wildcard characters (`%`, `_`, `\`) in admin searches are escaped to prevent search abuse.
+- **Concurrency & Race Conditions**: Event capacity enrollment catches database `IntegrityError` with clean transaction rollbacks.
+- **Restricted CORS & Security Headers**: Injected headers including `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, and `Referrer-Policy`.
+- **Client-Side Tampering Defense**: Protected dashboard routes verify session tokens live against `/api/auth/me` on load.
 
+---
+
+## 💻 Tech Stack
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Backend** | Python 3.10+, FastAPI | High-performance asynchronous REST API framework |
+| **ORM & DB** | SQLAlchemy 2.0, SQLite / MySQL | Object-relational mapping with cascade rules |
+| **Validation** | Pydantic v2 | Type validation and field constraints |
+| **Authentication**| PyJWT, PBKDF2 / Bcrypt | Stateless JWT Bearer tokens and salted hashing |
+| **Frontend** | HTML5, Modern CSS3 | Custom glassmorphism design system & micro-animations |
+| **UI Framework** | Bootstrap 5.3, Bootstrap Icons | Responsive grid system and interactive modals |
+| **Visualizations**| Chart.js | Dynamic analytics charts for hours & skills |
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Prerequisites
+* Python 3.10 or higher installed
+* Modern web browser (Chrome, Firefox, Edge, Safari)
+
+### 2. Clone & Setup Virtual Environment
 ```bash
-# Navigate to project directory
-cd voluenteer
+# Navigate to project root
+cd volunteer
 
-# Create a virtual environment (optional but recommended)
+# Create virtual environment
 python -m venv venv
 
 # Activate virtual environment
 # Windows:
 venv\Scripts\activate
-# macOS/Linux:
+# macOS / Linux:
 source venv/bin/activate
 
-# Install Python dependencies
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment (Optional)
-
-Create or adjust `.env` file (a template is provided in `.env.example`):
-
+### 3. Configure Environment Variables
+A sample `.env` file is automatically generated. You can customize `.env`:
 ```ini
-# For SQLite (Default):
 DATABASE_URL=sqlite:///./volunteers.db
-
-# For MySQL:
-# DATABASE_URL=mysql+pymysql://username:password@localhost:3306/volunteer_db
-
-SECRET_KEY=super-secret-jwt-key-change-in-production-2026
+SECRET_KEY=volunteer-jwt-production-secret-98dfb841a2e9b17793d5
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
+ADMIN_REGISTRATION_KEY=AdminPortalSecretKey2026!
+ALLOWED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
 ```
 
-### 3. Seed Sample Database Data
-
-Run the seeding script to populate the initial Admin account, sample volunteers, upcoming events, assignments, and attendance logs:
-
+### 4. Initialize Demo Database
+Seed the database with sample events, volunteers, and an admin account:
 ```bash
 python -m backend.seed
 ```
 
-### 4. Launch the Application
-
-Start the FastAPI application with Uvicorn:
-
+### 5. Launch the Server
 ```bash
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Access the application in your browser:
-* **Landing Page**: `http://127.0.0.1:8000/`
-* **Login / Register**: `http://127.0.0.1:8000/login`
-* **Admin Dashboard**: `http://127.0.0.1:8000/admin`
-* **Volunteer Portal**: `http://127.0.0.1:8000/volunteer`
-* **Interactive API Docs (OpenAPI / Swagger)**: `http://127.0.0.1:8000/docs`
+Open your browser to:
+* **Landing Page**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+* **Account Sign-In**: [http://127.0.0.1:8000/login.html](http://127.0.0.1:8000/login.html)
+* **Interactive API Docs (Swagger)**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
 ## 🔑 Demo Credentials
 
-| Role | Email | Password | Access / Functionality |
+| Role | Email | Password | Key Permissions |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `admin@volunteermsg.org` | `admin123` | Full access to verification, volunteer directory, event CRUD, assignments, and CSV exports. |
-| **Volunteer (Approved)** | `sarah.j@example.com` | `password123` | Access to assigned events, live shift check-in/out timer, and personal hours log. |
-| **Volunteer (Pending)** | `emily.davis@example.com` | `password123` | Demonstrates pending verification alert state. |
+| **System Admin** | `admin@volunteermsg.org` | `admin123` | Verification queue, event management, assignments, CSV reports |
+| **Approved Volunteer** | `sarah.j@example.com` | `password123` | Scheduled events, live shift timer, attendance logs |
+| **Pending Volunteer** | `emily.davis@example.com` | `password123` | Pending review banner demonstration |
+| **Admin Registration Key** | — | `AdminPortalSecretKey2026!` | Used to create new admin accounts via `/admin_register.html` |
 
 ---
 
-## 📂 Project Structure
+## 📡 API Documentation
 
-```
-voluenteer/
+The backend serves 18 REST endpoints documented automatically via Swagger UI at `/docs`:
+
+* **Authentication**: `/api/auth/register`, `/api/auth/login`, `/api/auth/admin/register`, `/api/auth/me`, `/api/auth/profile`
+* **Volunteer Portals**: `/api/volunteer/events`, `/api/volunteer/my-assignments`, `/api/volunteer/events/{id}/join`
+* **Attendance & Time Tracking**: `/api/attendance/check-in`, `/api/attendance/check-out`, `/api/attendance/active`, `/api/attendance/history`
+* **Administration**: `/api/admin/volunteers`, `/api/admin/events`, `/api/admin/assignments`
+* **Reports**: `/api/reports/dashboard`, `/api/reports/charts`, `/api/reports/export/volunteers/csv`, `/api/reports/export/attendance/csv`
+
+---
+
+## 📂 Project Directory Structure
+
+```text
+volunteer/
 ├── backend/
-│   ├── main.py                  # FastAPI application setup & static serving
-│   ├── database.py              # SQLAlchemy engine & session maker
-│   ├── models.py                # Database models (User, Event, Assignment, Attendance)
-│   ├── schemas.py               # Pydantic validation & response schemas
-│   ├── auth.py                  # JWT authentication & security dependencies
-│   ├── seed.py                  # Database seed script for initial testing data
-│   ├── schema.sql               # Pure MySQL DDL & DML script
+│   ├── main.py                  # FastAPI application, CORS, static mounts & security headers
+│   ├── database.py              # SQLAlchemy database engine & session dependency
+│   ├── models.py                # Database models (User, Event, EventAssignment, Attendance)
+│   ├── schemas.py               # Pydantic v2 validation & serialization schemas
+│   ├── auth.py                  # JWT creation/verification & password hashing utilities
+│   ├── seed.py                  # Database seeder with sample accounts & events
+│   ├── schema.sql               # MySQL-compatible DDL schema script
 │   └── routers/
-│       ├── auth_router.py       # Login, Register, Profile endpoints
-│       ├── admin_router.py      # Verification, Event CRUD, Assignments
-│       ├── volunteer_router.py  # Event browsing, Self-join endpoints
-│       ├── attendance_router.py # Check-in, Check-out, Live timer
-│       └── reports_router.py    # Analytics metrics & CSV report generation
+│       ├── auth_router.py       # Authentication, profile, & registration endpoints
+│       ├── admin_router.py      # Verification queue, volunteer directory, event CRUD
+│       ├── volunteer_router.py  # Event discovery & self-registration
+│       ├── attendance_router.py # Shift check-in, check-out, & UTC timer
+│       └── reports_router.py    # Analytics metrics & CSV export streams
 ├── frontend/
-│   ├── index.html               # Public Landing page
-│   ├── login.html               # Login & Volunteer Registration portal
-│   ├── admin_dashboard.html     # Admin Management Portal
-│   ├── volunteer_dashboard.html # Volunteer Portal & Shift Tracker
+│   ├── index.html               # Public homepage with animated process flow
+│   ├── login.html               # Sign-in & volunteer registration portal
+│   ├── admin_register.html      # Protected administrator registration view
+│   ├── admin_dashboard.html     # Administrative management portal
+│   ├── volunteer_dashboard.html # Volunteer portal & interactive shift tracker
 │   ├── css/
-│   │   └── styles.css           # Glassmorphic CSS design system & responsive styling
+│   │   └── styles.css           # Glassmorphic UI design tokens & micro-animations
 │   └── js/
-│       ├── api.js               # Centralized REST API client & toasts
-│       ├── auth.js              # Auth & session management
-│       ├── admin.js             # Admin dashboard controller
-│       ├── volunteer.js         # Volunteer portal & live shift timer controller
-│       └── reports.js           # Analytics charts & CSV exports
-├── .env.example                 # Environment variable sample configuration
-├── requirements.txt             # Python dependencies
-└── README.md                    # Project documentation
+│       ├── api.js               # Centralized Fetch API client with toast notifications
+│       ├── auth.js              # Authentication, session guards, & form handlers
+│       ├── admin.js             # Admin dashboard controller & search filters
+│       ├── volunteer.js         # Volunteer dashboard, quick check-in modal, & live timer
+│       └── reports.js           # Chart.js analytics & CSV export triggers
+├── .env                         # Local environment configuration
+├── requirements.txt             # Python package dependencies
+├── PROJECT_REPORT.md            # Comprehensive engineering architecture report
+└── README.md                    # Project documentation & setup guide
 ```
 
 ---
 
-## 🐙 Git & GitHub Push Commands
+## 📄 License & Authors
 
-To push this repository to GitHub:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: Volunteer Management and Scheduling System"
-git branch -M main
-git remote add origin https://github.com/your-username/volunteer-management-system.git
-git push -u origin main
-```
+Distributed under the **MIT License**. See `LICENSE` for more information.  
+Developed for non-profit and community event coordination.

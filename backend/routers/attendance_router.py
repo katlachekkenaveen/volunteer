@@ -1,15 +1,22 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from backend.database import get_db
-from backend.models import User, Event, Attendance, AttendanceStatus, UserRole
+from backend.models import User, Event, EventAssignment, Attendance, AttendanceStatus, UserRole, EventStatus
 from backend.schemas import AttendanceCheckIn, AttendanceCheckOut, AttendanceResponse
 from backend.auth import get_current_user, get_current_approved_user
 
 router = APIRouter(prefix="/api/attendance", tags=["Attendance & Hours"])
+
+def ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 def format_attendance_response(att: Attendance, db: Session) -> AttendanceResponse:
     ev = db.query(Event).filter(Event.id == att.event_id).first()
@@ -20,8 +27,8 @@ def format_attendance_response(att: Attendance, db: Session) -> AttendanceRespon
         event_name=ev.name if ev else "Unknown Event",
         volunteer_id=att.volunteer_id,
         volunteer_name=vol.name if vol else "Unknown Volunteer",
-        check_in_time=att.check_in_time,
-        check_out_time=att.check_out_time,
+        check_in_time=ensure_utc(att.check_in_time),
+        check_out_time=ensure_utc(att.check_out_time),
         hours_worked=att.hours_worked,
         status=att.status,
         notes=att.notes
@@ -33,10 +40,25 @@ def check_in(
     current_user: User = Depends(get_current_approved_user),
     db: Session = Depends(get_db)
 ):
-    # Verify event exists
+    # Verify event exists and is not cancelled
     event = db.query(Event).filter(Event.id == data.event_id).first()
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found.")
+
+    if event.status == EventStatus.CANCELLED.value:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot check in to a cancelled event.")
+
+    # Volunteers must be assigned/registered for the event
+    if current_user.role != UserRole.ADMIN.value:
+        assignment = db.query(EventAssignment).filter(
+            EventAssignment.event_id == data.event_id,
+            EventAssignment.volunteer_id == current_user.id
+        ).first()
+        if not assignment:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You must be registered or assigned to this event before checking in."
+            )
 
     # Check if volunteer already has an active check-in
     active = db.query(Attendance).filter(
@@ -53,7 +75,7 @@ def check_in(
     new_attendance = Attendance(
         event_id=data.event_id,
         volunteer_id=current_user.id,
-        check_in_time=datetime.utcnow(),
+        check_in_time=datetime.now(timezone.utc),
         status=AttendanceStatus.CHECKED_IN.value,
         notes=data.notes
     )
@@ -80,12 +102,16 @@ def check_out(
     if attendance.status == AttendanceStatus.COMPLETED.value:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Shift has already been checked out.")
 
-    check_out_dt = datetime.utcnow()
+    check_out_dt = datetime.now(timezone.utc)
     attendance.check_out_time = check_out_dt
     
-    # Calculate hours worked automatically
-    duration_seconds = (check_out_dt - attendance.check_in_time).total_seconds()
-    # Enforce minimum 0.05 hr (3 mins) for test / quick checkouts or exact float calculation
+    # Calculate hours worked automatically with timezone safety
+    in_time = attendance.check_in_time
+    if in_time.tzinfo is None:
+        in_time = in_time.replace(tzinfo=timezone.utc)
+    
+    duration_seconds = max(0.0, (check_out_dt - in_time).total_seconds())
+    # Enforce minimum 0.05 hr (3 mins) for quick test checkouts or exact float calculation
     hours = max(0.05, round(duration_seconds / 3600.0, 2))
     
     attendance.hours_worked = hours

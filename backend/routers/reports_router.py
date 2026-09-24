@@ -37,7 +37,7 @@ def get_dashboard_metrics(
     total_assignments = db.query(EventAssignment).count()
     completed_attendance = db.query(Attendance).filter(Attendance.status == "completed").count()
 
-    attendance_rate = round((completed_attendance / total_assignments * 100.0), 1) if total_assignments > 0 else 100.0
+    attendance_rate = min(100.0, round((completed_attendance / total_assignments * 100.0), 1)) if total_assignments > 0 else 100.0
 
     return DashboardStats(
         total_volunteers=total_volunteers,
@@ -77,6 +77,15 @@ def get_chart_data(
         "skills_distribution": skills_count
     }
 
+def sanitize_csv_field(val: Any) -> Any:
+    if val is None:
+        return ""
+    s = str(val)
+    # Prevent CSV Formula Injection (Excel / LibreOffice command execution)
+    if s and s[0] in ("=", "+", "-", "@", "\t", "\r"):
+        return f"'{s}"
+    return s
+
 @router.get("/export/volunteers/csv")
 def export_volunteers_csv(
     admin_user: User = Depends(get_current_admin),
@@ -94,12 +103,12 @@ def export_volunteers_csv(
                     .scalar() or 0.0
         writer.writerow([
             vol.id,
-            vol.name,
-            vol.email,
-            vol.phone,
-            vol.status,
-            vol.skills or "",
-            vol.availability or "",
+            sanitize_csv_field(vol.name),
+            sanitize_csv_field(vol.email),
+            sanitize_csv_field(vol.phone),
+            sanitize_csv_field(vol.status),
+            sanitize_csv_field(vol.skills or ""),
+            sanitize_csv_field(vol.availability or ""),
             round(float(tot_hrs), 2),
             vol.created_at.strftime("%Y-%m-%d")
         ])
@@ -126,13 +135,13 @@ def export_attendance_csv(
         vol = db.query(User).filter(User.id == att.volunteer_id).first()
         writer.writerow([
             att.id,
-            ev.name if ev else "N/A",
-            vol.name if vol else "N/A",
+            sanitize_csv_field(ev.name if ev else "N/A"),
+            sanitize_csv_field(vol.name if vol else "N/A"),
             att.check_in_time.strftime("%Y-%m-%d %H:%M:%S") if att.check_in_time else "",
             att.check_out_time.strftime("%Y-%m-%d %H:%M:%S") if att.check_out_time else "",
             att.hours_worked,
-            att.status,
-            att.notes or ""
+            sanitize_csv_field(att.status),
+            sanitize_csv_field(att.notes or "")
         ])
 
     return Response(
